@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-staging-deployment
+spec:
+  replicas: 3  # Lower replicas for dev environment
+  selector:
+    matchLabels:
+      app: nginx  # This ensures the Deployment manages pods with this label
+  template:
+    metadata:
+      labels:
+        app: nginx  # Labels that pods should have
+    spec:
+      containers:
+        - name: nginx
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"

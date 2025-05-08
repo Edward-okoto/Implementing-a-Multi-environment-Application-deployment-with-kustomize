@@ -1,0 +1,43 @@
+apiVersion: apps/v1  # API version for the deployment object
+kind: Deployment      # Specifies that this is a Deployment
+metadata:
+  name: nginx         # Name of the deployment
+spec:                    # Specification of the deployment
+  replicas: 2            # Number of replicas (pods running)
+  selector:              # Selector to identify the pods
+    matchLabels:
+      app: nginx
+  template:              # Template for pod creation
+    metadata:
+      labels:
+        app: nginx       # Label applied to the pod
+    spec:
+      containers:
+      - name: nginx      # Name of the container
+        image: nginx:stable  # Updated to stable NGINX version
+        ports:
+          - containerPort: 80  # Port the container will expose
+        resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+        envFrom:                   # Dynamically load environment variables
+          - configMapRef:
+              name: app-config
+          - secretRef:
+              name: app-secret
+        livenessProbe:              # Ensures container is running
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 10
+        readinessProbe:             # Ensures container is ready to serve traffic
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
